@@ -1,0 +1,52 @@
+name: FoundBoxx
+main: me.Jaryl.FoundBoxx.FoundBoxx
+version: 1.7
+author: Jaryl
+website: http://e-clubmalaysia.com/, http://jaryl.euflux.com
+description: >
+    Announce on certain block breaks
+    by players and able to not show
+    for the rest of the relative
+    stacks.
+commands:
+    foundboxx:
+        description: FB main command and help.
+        usage: /foundboxx
+        aliases: fb
+permissions:
+    foundboxx.*:
+        description: Gives access to all foundboxx functions
+        children:
+            foundboxx.admin: true
+            foundboxx.notify: true
+            foundboxx.dark: true
+            foundboxx.ignore.*: true
+    foundboxx.admin:
+        description: Gives access to all foundboxx commands
+        children:
+            foundboxx.cmd.reload: true
+            foundboxx.cmd.queue: true
+            foundboxx.cmd.farmrate: true
+            foundboxx.cmd.update: true
+    foundboxx.notify:
+        description: Allow getting the notifications
+    foundboxx.dark:
+        description: Allow mining in the dark all the time
+    foundboxx.cmd.reload:
+        description: Allow using the reload and config commands
+    foundboxx.cmd.queue:
+        description: Allow using the queue command
+    foundboxx.cmd.farmrate:
+        description: Allow using the farmrate command
+    foundboxx.cmd.update:
+        description: Allow using the update command
+    foundboxx.ignore.*:
+        description: Ignore the player for all ore finds
+        children:
+            foundboxx.ignore.diamond: true
+            foundboxx.ignore.gold: true
+            foundboxx.ignore.iron: true
+            foundboxx.ignore.lapis: true
+            foundboxx.ignore.redstone: true
+            foundboxx.ignore.coal: true
+            foundboxx.ignore.allextras: true
