@@ -28,8 +28,7 @@ If you wish to modify, do not in any way distribute the modified plugin unless y
 Want to contribute?
 --------------------
 
-If you are a Java coder, You can fork this source code on GitHub, edit and then post a pull request. I will take a look occationally and see if it is good to implement or not.
-If you are not though, you can just go on the BukkitDev or the forum post to post your suggestion.
+If you are a Java coder, You can fork this source code on GitHub, edit and then post a pull request. I will take a look occationally and see if it is good to implement or not. If you are not though, you can just go on the BukkitDev or the forum post to post your suggestion.
 
 
-By pulling, you must agree to license your code under the "GNU General Public License v3".
+By forking and pulling, you must agree to license your code under the "GNU General Public License v3".

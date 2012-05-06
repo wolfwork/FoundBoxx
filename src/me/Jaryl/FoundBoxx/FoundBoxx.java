@@ -7,6 +7,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import me.Jaryl.FoundBoxx.Update.Updater;
+
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -16,8 +18,6 @@ import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public class FoundBoxx extends JavaPlugin {
-	public static int curver = 45;
-	
 	public PermissionsHandler PermHandler = new PermissionsHandler(this);
 	private fBlockListener blockListener = new fBlockListener(this);
 	private fBreakListener breakListener = new fBreakListener(this);
@@ -147,16 +147,21 @@ public class FoundBoxx extends JavaPlugin {
 	{
 		p.sendMessage("    Survival only: " + Creative);
 		p.sendMessage("    Permissions: " + Perms);
-		p.sendMessage("    DIAMONDS: " + Diamonds);
-		p.sendMessage("    GOLD: " + Gold);
-		p.sendMessage("    IRON: " + Iron);
-		p.sendMessage("    LAPIS: " + Lapis);
-		p.sendMessage("    REDSTONE: " + Red);
-		p.sendMessage("    COAL: " + Coal);
-		p.sendMessage("    EXTRA BLOCKS: " + ExtraBlks.toString());
-		p.sendMessage("    Chance random item: " + Chance + "%");
-		p.sendMessage("    Max random items: " + maxGive);
-		p.sendMessage("    Random item: " + Item);
+		p.sendMessage("    Messages:");
+		p.sendMessage("        Ore found: " + OreMsg);
+		p.sendMessage("        Must have light to mine: " + DarkMsg);
+		p.sendMessage("    Blocks:");
+		p.sendMessage("        DIAMONDS: " + Diamonds);
+		p.sendMessage("        GOLD: " + Gold);
+		p.sendMessage("        IRON: " + Iron);
+		p.sendMessage("        LAPIS: " + Lapis);
+		p.sendMessage("        REDSTONE: " + Red);
+		p.sendMessage("        COAL: " + Coal);
+		p.sendMessage("        EXTRA BLOCKS: " + ExtraBlks.toString());
+		p.sendMessage("    Random Item:");
+		p.sendMessage("        Chance random item: " + Chance + "%");
+		p.sendMessage("        Max random items: " + maxGive);
+		p.sendMessage("        Random item: " + Item);
 		p.sendMessage("    Disallow mining in dark: " + Dark);
 		p.sendMessage("    SQL: " + ((!SQL.equalsIgnoreCase("false")) ? ((SQL.equalsIgnoreCase("true") || SQL.equalsIgnoreCase("SQL")) ? ("mysql://" + sqlUser + ":" + sqlPass + "@" + sqlURL + ":" + sqlPort + "/" + sqlDatabase + "/" + sqlPrefix + "-log" + " (" + sqlDays + ", " + sqlLimit + ")") : "H2 Database") : false));
 	}
@@ -216,7 +221,7 @@ public class FoundBoxx extends JavaPlugin {
 				if (args[0].equalsIgnoreCase("update") && PermHandler.hasPermission(sender, "foundboxx.cmd.update", false, false))
 				{
 					try {
-						if (Updater.update())
+						if (Updater.update(this))
 							sender.sendMessage(ChatColor.GREEN + "[FoundBoxx] Plugin updated. Reload to complete. If you think this is bugged, inform Jaryl.");
 						else
 							sender.sendMessage(ChatColor.YELLOW + "[FoundBoxx] No updates available.");
@@ -346,7 +351,7 @@ public class FoundBoxx extends JavaPlugin {
     	System.out.println("[" + this.getDescription().getName() + " v" + this.getDescription().getVersion() + "] Enabled.");
 	
     	try {
-    		if (Updater.update())
+    		if (Updater.update(this))
 				System.out.println("[FoundBoxx] Plugin auto-updated. Reload to complete. If you think this is bugged, inform Jaryl.");
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
