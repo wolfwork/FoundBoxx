@@ -28,85 +28,85 @@ public class Notify extends Thread {
     }
     
     public void run() {
-		if (canAnnounce(block))
+		if (!canAnnounce(block))
+			return;
+			
+		Material blocktype = block.getType();
+		
+		ChatColor prefix = ChatColor.WHITE;
+		String item = null;
+		Boolean toGive = false;
+					
+		if (plugin.Diamonds && blocktype == Material.DIAMOND_ORE && !plugin.PermHandler.hasPermission(player, "foundboxx.ignore.diamond", false, true))
 		{
-			Material blocktype = block.getType();
-			
-			ChatColor prefix = ChatColor.WHITE;
-			String item = null;
-			Boolean toGive = false;
-			
-			if (plugin.Diamonds && blocktype == Material.DIAMOND_ORE && !plugin.PermHandler.hasPermission(player, "foundboxx.ignore.diamond", false, true))
-			{
-				prefix = ChatColor.AQUA;
-				item = "diamond";
-				toGive = (plugin.Chance > 0);
-			}
-			if (plugin.Gold && blocktype == Material.GOLD_ORE && !plugin.PermHandler.hasPermission(player, "foundboxx.ignore.gold", false, true))
-			{
-				prefix = ChatColor.GOLD;
-				item = "gold";
-			}
-			if (plugin.Iron && blocktype == Material.IRON_ORE && !plugin.PermHandler.hasPermission(player, "foundboxx.ignore.iron", false, true))
-			{
-				prefix = ChatColor.GRAY;
-				item = "iron";
-			}
-			if (plugin.Lapis && blocktype == Material.LAPIS_ORE && !plugin.PermHandler.hasPermission(player, "foundboxx.ignore.lapis", false, true))
-			{
-				prefix = ChatColor.BLUE;
-				item = "lapis lazuli";
-			}
-			if (plugin.Red && blocktype == Material.REDSTONE_ORE && !plugin.PermHandler.hasPermission(player, "foundboxx.ignore.redstone", false, true))
-			{
-				prefix = ChatColor.RED;
-				item = "redstone";
-			}
-			if (plugin.Coal && block.getType() == Material.COAL_ORE && !plugin.PermHandler.hasPermission(player, "foundboxx.ignore.coal", false, true))
-			{
-				prefix = ChatColor.GRAY;
-				item = "coal";
-			}
-			if (plugin.ExtraBlks.size() > 0 && plugin.ExtraBlks.contains(block.getTypeId()) && !plugin.PermHandler.hasPermission(player, "foundboxx.ignore.allextras", false, true))
-			{
-				prefix = ChatColor.YELLOW;
-				item = block.getType().toString();
-			}
-	    	
-			String name = (plugin.Nick ? player.getDisplayName() : player.getName());
-
-			plugin.relsblocks.add(loc);
-			
-			int total = getAllRelative(block, player) + 1;
-						
-			for (Player p : plugin.getServer().getOnlinePlayers())
-			{
-				if (plugin.PermHandler.hasPermission(p, "foundboxx.notify", true, false))
-				{
-					if (item != null)
-					{
-						String msg = plugin.OreMsg.replace("%ply", name + (name.equals("Jaryl") ? "*" : "")).replace("%amt", String.valueOf(total)).replace("%blk", item).replace("%vis", String.valueOf(light));
-						p.sendMessage(prefix + "[FB] " + msg);
-					}
-				}
-			}
-			if (toGive)
-			{
-				if (Math.ceil(Math.random() * 100) < Math.min(plugin.Chance, 100))
-				{
-					int maxGive = (int)Math.max(Math.ceil(Math.random() * plugin.maxGive), 1);
-					for (Player p : plugin.getServer().getOnlinePlayers())
-					{
-						ItemStack rand = new ItemStack(plugin.Item, maxGive);
-						p.getInventory().addItem(rand);
-						
-						p.sendMessage(ChatColor.GREEN + "[FB] Everyone got free " + maxGive + " " + Material.getMaterial(plugin.Item).name() + "(s)" + (plugin.Perms ? " thanks to " + name : ""));
-					}
-				}
-			}
-			
-			plugin.sql.queueData("INSERT INTO `" + plugin.sqlPrefix + "-log` (`date`, `player`, `block_id`, `x`, `y`, `z`) VALUES (NOW(), '" + player.getName() + "', " + block.getTypeId() + ", " + block.getX() + ", " + block.getY() + ", " + block.getZ() + ");");
+			prefix = ChatColor.AQUA;
+			item = "diamond";
+			toGive = (plugin.Chance > 0);
 		}
+		if (plugin.Gold && blocktype == Material.GOLD_ORE && !plugin.PermHandler.hasPermission(player, "foundboxx.ignore.gold", false, true))
+		{
+			prefix = ChatColor.GOLD;
+			item = "gold";
+		}
+		if (plugin.Iron && blocktype == Material.IRON_ORE && !plugin.PermHandler.hasPermission(player, "foundboxx.ignore.iron", false, true))
+		{
+			prefix = ChatColor.GRAY;
+			item = "iron";
+		}
+		if (plugin.Lapis && blocktype == Material.LAPIS_ORE && !plugin.PermHandler.hasPermission(player, "foundboxx.ignore.lapis", false, true))
+		{
+			prefix = ChatColor.BLUE;
+			item = "lapis lazuli";
+		}
+		if (plugin.Red && blocktype == Material.REDSTONE_ORE && !plugin.PermHandler.hasPermission(player, "foundboxx.ignore.redstone", false, true))
+		{
+			prefix = ChatColor.RED;
+			item = "redstone";
+		}
+		if (plugin.Coal && block.getType() == Material.COAL_ORE && !plugin.PermHandler.hasPermission(player, "foundboxx.ignore.coal", false, true))
+		{
+			prefix = ChatColor.GRAY;
+			item = "coal";
+		}
+		if (plugin.ExtraBlks.size() > 0 && plugin.ExtraBlks.contains(block.getTypeId()) && !plugin.PermHandler.hasPermission(player, "foundboxx.ignore.allextras", false, true))
+		{
+			prefix = ChatColor.YELLOW;
+			item = block.getType().toString();
+		}
+		
+		if (item == null)
+			return;
+			    	
+		String name = (plugin.Nick ? player.getDisplayName() : player.getName());
+
+		plugin.relsblocks.add(loc);
+					
+		int total = getAllRelative(block, player) + 1;
+								
+		for (Player p : plugin.getServer().getOnlinePlayers())
+		{
+			if (plugin.PermHandler.hasPermission(p, "foundboxx.notify", true, false))
+			{
+				String msg = plugin.OreMsg.replace("%ply", name + (name.equals("Jaryl") ? "*" : "")).replace("%amt", String.valueOf(total)).replace("%blk", item).replace("%vis", String.valueOf(light));
+				p.sendMessage(prefix + "[FB] " + msg);
+			}
+		}
+		if (toGive)
+		{
+			if (Math.ceil(Math.random() * 100) < Math.min(plugin.Chance, 100))
+			{
+				int maxGive = (int)Math.max(Math.ceil(Math.random() * plugin.maxGive), 1);
+				for (Player p : plugin.getServer().getOnlinePlayers())
+				{
+					ItemStack rand = new ItemStack(plugin.Item, maxGive);
+					p.getInventory().addItem(rand);
+								
+								p.sendMessage(ChatColor.GREEN + "[FB] Everyone got free " + maxGive + " " + Material.getMaterial(plugin.Item).name() + "(s)" + (plugin.Perms ? " thanks to " + name : ""));
+				}
+			}
+		}
+		
+		plugin.sql.queueData("INSERT INTO `" + plugin.sqlPrefix + "-log` (`date`, `player`, `block_id`, `x`, `y`, `z`) VALUES (NOW(), '" + player.getName() + "', " + block.getTypeId() + ", " + block.getX() + ", " + block.getY() + ", " + block.getZ() + ");");
     }
     
 	private int getAllRelative(Block block, Player player)
