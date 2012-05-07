@@ -1,6 +1,5 @@
 package me.Jaryl.FoundBoxx;
 
-import java.io.IOException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -147,9 +146,6 @@ public class FoundBoxx extends JavaPlugin {
 	{
 		p.sendMessage("    Survival only: " + Creative);
 		p.sendMessage("    Permissions: " + Perms);
-		p.sendMessage("    Messages:");
-		p.sendMessage("        Ore found: " + OreMsg);
-		p.sendMessage("        Must have light to mine: " + DarkMsg);
 		p.sendMessage("    Blocks:");
 		p.sendMessage("        DIAMONDS: " + Diamonds);
 		p.sendMessage("        GOLD: " + Gold);
@@ -220,16 +216,8 @@ public class FoundBoxx extends JavaPlugin {
 				}
 				if (args[0].equalsIgnoreCase("update") && PermHandler.hasPermission(sender, "foundboxx.cmd.update", false, false))
 				{
-					try {
-						if (Updater.update(this))
-							sender.sendMessage(ChatColor.GREEN + "[FoundBoxx] Plugin updated. Reload to complete. If you think this is bugged, inform Jaryl.");
-						else
-							sender.sendMessage(ChatColor.YELLOW + "[FoundBoxx] No updates available.");
-					} catch (IOException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-						sender.sendMessage(ChatColor.RED + "[FoundBoxx] Problem updating, check console.");
-					}
+					Thread updater = new Updater(this, sender);
+					updater.start();
 					
 					return true;
 				}
@@ -350,12 +338,7 @@ public class FoundBoxx extends JavaPlugin {
     	
     	System.out.println("[" + this.getDescription().getName() + " v" + this.getDescription().getVersion() + "] Enabled.");
 	
-    	try {
-    		if (Updater.update(this))
-				System.out.println("[FoundBoxx] Plugin auto-updated. Reload to complete. If you think this is bugged, inform Jaryl.");
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+    	Thread updater = new Updater(this, null);
+		updater.start();
 	}
 }

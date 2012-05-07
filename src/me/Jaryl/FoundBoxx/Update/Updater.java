@@ -7,14 +7,26 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.MalformedURLException;
 import java.net.URL;
+
+import org.bukkit.ChatColor;
+import org.bukkit.command.CommandSender;
+
 import me.Jaryl.FoundBoxx.FoundBoxx;
 import me.Jaryl.FoundBoxx.Update.RSS.Feed;
 import me.Jaryl.FoundBoxx.Update.RSS.FeedMessage;
 import me.Jaryl.FoundBoxx.Update.RSS.RSSFeedParser;
 
-public class Updater {
+public class Updater extends Thread {
+	private final FoundBoxx plugin;
+	private final CommandSender sender;
 	
-	public static boolean update(FoundBoxx plugin) throws IOException
+	public Updater(FoundBoxx plugin, CommandSender sender)
+	{
+		this.plugin = plugin;
+		this.sender = sender;
+	}
+	
+	public void run()
 	{
 		int curver = Integer.parseInt(plugin.getDescription().getVersion().replace(".", ""));
 		int latestver = curver;
@@ -27,6 +39,8 @@ public class Updater {
 			latestlink = message.getLink();
 			break;
 		}
+		
+		System.out.println(latestver + "\t" + curver);
 
 		BufferedReader res;
 		URL u;
@@ -59,7 +73,10 @@ public class Updater {
 				            if (fos != null)
 			                    fos.close();
 				            
-				            return true;
+				            if (sender != null)
+				            	sender.sendMessage(ChatColor.GREEN + "[FoundBoxx] Plugin updated. Reload to complete. If you think this is bugged, inform Jaryl.");
+				            else
+				            	System.out.println(ChatColor.GREEN + "[FoundBoxx] Plugin updated. Reload to complete. If you think this is bugged, inform Jaryl.");
 				    	}
 				    }
 				}
@@ -67,7 +84,13 @@ public class Updater {
 		} catch (MalformedURLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
+		
+		if (sender != null)
+			sender.sendMessage(ChatColor.YELLOW + "[FoundBoxx] No updates available.");
 		
 		// Deprecated
 		/* BufferedReader res;
@@ -111,7 +134,5 @@ public class Updater {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}*/
-	    
-		return false;
 	}
 }
