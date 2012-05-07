@@ -39,8 +39,6 @@ public class Updater extends Thread {
 			latestlink = message.getLink();
 			break;
 		}
-		
-		System.out.println(latestver + "\t" + curver);
 
 		BufferedReader res;
 		URL u;

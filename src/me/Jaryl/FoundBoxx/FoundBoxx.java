@@ -3,14 +3,13 @@ package me.Jaryl.FoundBoxx;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
+import me.Jaryl.FoundBoxx.Threads.Farmrate;
 import me.Jaryl.FoundBoxx.Update.Updater;
 
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
-import org.bukkit.Material;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.plugin.PluginManager;
@@ -233,81 +232,16 @@ public class FoundBoxx extends JavaPlugin {
 	{
 		if (sql.Connected())
 		{	
-			int coal = 0;
-			int iron = 0;
-			int red = 0;
-			int lapis = 0;
-			int gold = 0;
-			int dias = 0;
-			
-			HashMap<Integer, Integer> extra = new HashMap<Integer, Integer>();
-			
 			try {
 				ResultSet rs = sql.Query("SELECT * FROM `" + sqlPrefix + "-log` WHERE `player` LIKE '" + name + "' AND `date` >= CURDATE() -" + days + " LIMIT " + sqlLimit + ";");
-				while (rs.next())
-				{
-					int id = rs.getInt("block_id");
-					if (Diamonds && id == 56)
-					{
-						dias++;
-					}
-					if (Gold && id == 14)
-					{
-						gold++;
-					}
-					if (Iron && id == 15)
-					{
-						iron++;
-					}
-					if (Lapis && id == 21)
-					{
-						lapis++;
-					}
-					if (Red && (id == 73 || id == 74))
-					{
-						red++;
-					}
-					if (Coal && id == 16)
-					{
-						coal++;
-					}
-					
-					if (ExtraBlks.size() > 0)
-					{
-						if (ExtraBlks.contains(id))
-						{
-							extra.put(id, (extra.containsKey(id) ? extra.get(id) + 1 : 0));
-						}
-					}
-				}
+				Thread farmrate = new Farmrate(this, rs, name, days, asker);
+				farmrate.start();
 			} catch (SQLException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 				asker.sendMessage("[FoundBoxx] Unable to load values above for checking.");
 			}
-			
-			asker.sendMessage(ChatColor.AQUA + "[FoundBoxx] Farming rates for " + name + " for the past " + days + " day(s):");
-			if (Diamonds && dias > 0)
-				asker.sendMessage("    Diamonds: " + (dias > (70 * Integer.parseInt(days)) ? ChatColor.RED : (dias > (50 * Integer.parseInt(days)) ? ChatColor.YELLOW : "")) + dias);
-			if (Gold && gold > 0)
-				asker.sendMessage("    Gold: " + (gold > (170 * Integer.parseInt(days)) ? ChatColor.RED : (gold > (100 * Integer.parseInt(days)) ? ChatColor.YELLOW : "")) + gold);
-			if (Iron && iron > 0)
-				asker.sendMessage("    Iron: " + (iron > (500 * Integer.parseInt(days)) ? ChatColor.RED : (iron > (350 * Integer.parseInt(days)) ? ChatColor.YELLOW : "")) + iron);
-			if (Lapis && lapis > 0)
-				asker.sendMessage("    Lapis Lazuli: " + (lapis > (90 * Integer.parseInt(days)) ? ChatColor.RED : (lapis > (60 * Integer.parseInt(days)) ? ChatColor.YELLOW : "")) + lapis);
-			if (Red && red > 0)
-				asker.sendMessage("    Red Stone: " + red);
-			if (Coal && coal > 0)
-				asker.sendMessage("    Coal: " + coal);
-			
-			if (extra.size() > 0)
-			{
-				for (int b : extra.keySet())
-				{
-					asker.sendMessage("    '" + Material.getMaterial(b).name() + "': " + extra.get(b));
-				}
-			}
-			
+
 			asker.sendMessage(ChatColor.YELLOW + "Yellow" + ChatColor.WHITE + " - Possible xRay, " + ChatColor.RED + "Red" + ChatColor.WHITE + " - Probably xRay");
 			return;
 		}
