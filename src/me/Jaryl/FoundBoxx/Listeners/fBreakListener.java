@@ -1,4 +1,6 @@
-package me.Jaryl.FoundBoxx;
+package me.Jaryl.FoundBoxx.Listeners;
+
+import me.Jaryl.FoundBoxx.FoundBoxx;
 
 import org.bukkit.GameMode;
 import org.bukkit.Location;

@@ -1,5 +1,6 @@
-package me.Jaryl.FoundBoxx;
+package me.Jaryl.FoundBoxx.Listeners;
 
+import me.Jaryl.FoundBoxx.FoundBoxx;
 import me.Jaryl.FoundBoxx.Threads.Notify;
 import org.bukkit.ChatColor;
 import org.bukkit.GameMode;

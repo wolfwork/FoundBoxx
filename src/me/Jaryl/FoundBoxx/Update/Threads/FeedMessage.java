@@ -1,4 +1,4 @@
-package me.Jaryl.FoundBoxx.Update.RSS;
+package me.Jaryl.FoundBoxx.Update.Threads;
 
 public class FeedMessage {
 

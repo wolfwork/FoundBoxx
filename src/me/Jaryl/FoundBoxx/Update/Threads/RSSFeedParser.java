@@ -1,4 +1,4 @@
-package me.Jaryl.FoundBoxx.Update.RSS;
+package me.Jaryl.FoundBoxx.Update.Threads;
 
 import java.io.IOException;
 import java.io.InputStream;

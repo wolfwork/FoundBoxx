@@ -12,13 +12,13 @@ import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 
 import me.Jaryl.FoundBoxx.FoundBoxx;
-import me.Jaryl.FoundBoxx.Update.RSS.Feed;
-import me.Jaryl.FoundBoxx.Update.RSS.FeedMessage;
-import me.Jaryl.FoundBoxx.Update.RSS.RSSFeedParser;
+import me.Jaryl.FoundBoxx.Update.Threads.Feed;
+import me.Jaryl.FoundBoxx.Update.Threads.FeedMessage;
+import me.Jaryl.FoundBoxx.Update.Threads.RSSFeedParser;
 
 public class Updater extends Thread {
-	private final FoundBoxx plugin;
-	private final CommandSender sender;
+	private FoundBoxx plugin;
+	private CommandSender sender;
 	
 	public Updater(FoundBoxx plugin, CommandSender sender)
 	{
@@ -72,9 +72,9 @@ public class Updater extends Thread {
 			                    fos.close();
 				            
 				            if (sender != null)
-				            	sender.sendMessage(ChatColor.GREEN + "[FoundBoxx] Plugin updated. Reload to complete. If you think this is bugged, inform Jaryl.");
+				            	sender.sendMessage(ChatColor.GREEN + "[" + plugin.getDescription().getFullName() + "] Plugin updated. Reload to complete. If you think this is bugged, inform Jaryl.");
 				            else
-				            	System.out.println(ChatColor.GREEN + "[FoundBoxx] Plugin updated. Reload to complete. If you think this is bugged, inform Jaryl.");
+				            	System.out.println(ChatColor.GREEN + "[" + plugin.getDescription().getFullName() + "] Plugin updated. Reload to complete. If you think this is bugged, inform Jaryl.");
 				    	}
 				    }
 				}
@@ -88,7 +88,7 @@ public class Updater extends Thread {
 		}
 		
 		if (sender != null)
-			sender.sendMessage(ChatColor.YELLOW + "[FoundBoxx] No updates available.");
+			sender.sendMessage(ChatColor.YELLOW + "[" + plugin.getDescription().getFullName() + "] No updates available.");
 		
 		// Deprecated
 		/* BufferedReader res;

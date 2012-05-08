@@ -5,6 +5,8 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
+import me.Jaryl.FoundBoxx.Listeners.fBlockListener;
+import me.Jaryl.FoundBoxx.Listeners.fBreakListener;
 import me.Jaryl.FoundBoxx.Threads.Farmrate;
 import me.Jaryl.FoundBoxx.Update.Updater;
 
@@ -15,6 +17,9 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import SQL.SQL;
+import SQL.Threads.SQLLoad;
+
 public class FoundBoxx extends JavaPlugin {
 	public PermissionsHandler PermHandler = new PermissionsHandler(this);
 	private fBlockListener blockListener = new fBlockListener(this);
@@ -23,6 +28,9 @@ public class FoundBoxx extends JavaPlugin {
 
 	public List<Location> relsblocks = new ArrayList<Location>();
 	public List<Location> brokenblocks = new ArrayList<Location>();
+	
+	public boolean needRestart;
+	
 	public boolean Creative;
 	public boolean Nick;
 	public boolean Perms;
@@ -49,7 +57,7 @@ public class FoundBoxx extends JavaPlugin {
 	public int SpecItem;
 	public boolean SpecFinder;
 	
-	public String SQL;
+	public String useSQL;
 	public String sqlURL;
 	public int sqlPort;
 	public String sqlDatabase;
@@ -99,7 +107,7 @@ public class FoundBoxx extends JavaPlugin {
 	    	
 	    	Dark = config.parse("Must_Have_Light_To_Mine", false);
 	    	
-	    	SQL = String.valueOf(config.parse("SQL_Enabled", false));
+	    	useSQL = String.valueOf(config.parse("SQL_Enabled", false));
 	    	sqlURL = config.parse("SQL.URL", "localhost");
 	    	sqlPort = config.parse("SQL.Port", 3306);
 	    	sqlDatabase = config.parse("SQL.Database", "minecraft");
@@ -118,18 +126,14 @@ public class FoundBoxx extends JavaPlugin {
     		printConfig(p);
     	}
     	
-    	if (!SQL.equalsIgnoreCase("false"))
+    	if (!useSQL.equalsIgnoreCase("false"))
     	{
-    		System.out.println("[FoundBoxx] Attempting to load " + (SQL.equalsIgnoreCase("h2") ? "H2" : "SQL") + ".");
-    		try {
-				sql.Load(sqlURL, sqlPort, sqlDatabase, sqlPrefix, sqlUser, sqlPass);
-				System.out.println("[FoundBoxx] " + (SQL.equalsIgnoreCase("h2") ? "H2" : "SQL") + " loaded.");
-				sql.queueData("DELETE FROM `" + sqlPrefix + "-log` WHERE `date` <= CURDATE() -" + sqlDays + " LIMIT " + sqlLimit + ";");
-			} catch (SQLException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-				System.out.println("[FoundBoxx] Unable to load " + (SQL.equalsIgnoreCase("h2") ? "H2" : "SQL") + " properly.");
-			}
+    		System.out.println("[FoundBoxx] Attempting to load " + (useSQL.equalsIgnoreCase("h2") ? "H2" : "SQL") + ".");
+    		Thread sqlload = new SQLLoad(this, sqlURL, sqlPort, sqlDatabase, sqlPrefix, sqlUser, sqlPass);
+			sqlload.start();
+			System.out.println("[FoundBoxx] " + (useSQL.equalsIgnoreCase("h2") ? "H2" : "SQL") + " loaded.");
+			
+			sql.queueData("DELETE FROM `" + sqlPrefix + "-log` WHERE `date` <= CURDATE() -" + sqlDays + " LIMIT " + sqlLimit + ";");
     	}
     	else
     	{
@@ -158,14 +162,20 @@ public class FoundBoxx extends JavaPlugin {
 		p.sendMessage("        Max random items: " + maxGive);
 		p.sendMessage("        Random item: " + Item);
 		p.sendMessage("    Disallow mining in dark: " + Dark);
-		p.sendMessage("    SQL: " + ((!SQL.equalsIgnoreCase("false")) ? ((SQL.equalsIgnoreCase("true") || SQL.equalsIgnoreCase("SQL")) ? ("mysql://" + sqlUser + ":" + sqlPass + "@" + sqlURL + ":" + sqlPort + "/" + sqlDatabase + "/" + sqlPrefix + "-log" + " (" + sqlDays + ", " + sqlLimit + ")") : "H2 Database") : false));
+		p.sendMessage("    SQL: " + ((!useSQL.equalsIgnoreCase("false")) ? ((useSQL.equalsIgnoreCase("true") || useSQL.equalsIgnoreCase("SQL")) ? ("mysql://" + sqlUser + ":" + sqlPass + "@" + sqlURL + ":" + sqlPort + "/" + sqlDatabase + "/" + sqlPrefix + "-log" + " (" + sqlDays + ", " + sqlLimit + ")") : "H2 Database") : false));
 	}
 	
 	@Override
 	public boolean onCommand(CommandSender sender, Command cmd, String commandLabel, String[] args){
+		if(needRestart)
+		{
+			sender.sendMessage(ChatColor.RED + "[FB] A restart/reload is required as there are major changes made. (H2 downloaded, etc)");
+			return true;
+		}
+		
 		if(commandLabel.equalsIgnoreCase("foundboxx") || commandLabel.equalsIgnoreCase("fb")) {
 			if(args.length == 0) {
-				sender.sendMessage(ChatColor.AQUA + "[FoundBoxx] Commands:");
+				sender.sendMessage(ChatColor.AQUA + "[FoundBoxx v" + getDescription().getVersion() + " ] Commands:");
 				sender.sendMessage("    /" + commandLabel);
 				sender.sendMessage("        reload - Reload configurations");
 				sender.sendMessage("        config - Print configurations");
@@ -270,7 +280,7 @@ public class FoundBoxx extends JavaPlugin {
     	pm.registerEvents(blockListener, this);
     	pm.registerEvents(breakListener, this);
     	
-    	System.out.println("[" + this.getDescription().getName() + " v" + this.getDescription().getVersion() + "] Enabled.");
+    	System.out.println("[" + this.getDescription().getName() + " v" + this.getDescription().getVersion() + "] Enabled" + (needRestart ? " but will need a restart soon." : "."));
 	
     	Thread updater = new Updater(this, null);
 		updater.start();
