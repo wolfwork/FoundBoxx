@@ -1,4 +1,4 @@
-package SQL;
+package me.Jaryl.SQLwrapper;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -9,9 +9,9 @@ import java.util.List;
 
 import me.Jaryl.FoundBoxx.FoundBoxx;
 
-public class SQL {
+public class SQLwrapper {
 	private FoundBoxx plugin; // NOTE TO SELF: CHANGE THIS ON NEW PROJECTS
-	public SQL(FoundBoxx pl) // NOTE TO SELF: CHANGE THIS ON NEW PROJECTS
+	public SQLwrapper(FoundBoxx pl) // NOTE TO SELF: CHANGE THIS ON NEW PROJECTS
 	{
 		plugin = pl;
 	}

@@ -1,4 +1,4 @@
-package SQL.Threads;
+package me.Jaryl.SQLwrapper.Threads;
 
 import java.io.BufferedInputStream;
 import java.io.File;

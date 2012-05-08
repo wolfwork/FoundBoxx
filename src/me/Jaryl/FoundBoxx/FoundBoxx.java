@@ -9,6 +9,8 @@ import me.Jaryl.FoundBoxx.Listeners.fBlockListener;
 import me.Jaryl.FoundBoxx.Listeners.fBreakListener;
 import me.Jaryl.FoundBoxx.Threads.Farmrate;
 import me.Jaryl.FoundBoxx.Update.Updater;
+import me.Jaryl.SQLwrapper.SQLwrapper;
+import me.Jaryl.SQLwrapper.Threads.SQLLoad;
 
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -17,14 +19,12 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import SQL.SQL;
-import SQL.Threads.SQLLoad;
 
 public class FoundBoxx extends JavaPlugin {
 	public PermissionsHandler PermHandler = new PermissionsHandler(this);
 	private fBlockListener blockListener = new fBlockListener(this);
 	private fBreakListener breakListener = new fBreakListener(this);
-	public SQL sql = new SQL(this);
+	public SQLwrapper sql = new SQLwrapper(this);
 
 	public List<Location> relsblocks = new ArrayList<Location>();
 	public List<Location> brokenblocks = new ArrayList<Location>();
