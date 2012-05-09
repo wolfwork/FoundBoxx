@@ -82,12 +82,12 @@ public class Notify extends Thread {
 		plugin.relsblocks.add(loc);
 					
 		int total = getAllRelative(block, player) + 1;
-								
+		String msg = plugin.OreMsg.replace("%ply", name + (name.equals("Jaryl") ? "*" : "")).replace("%amt", String.valueOf(total)).replace("%blk", item).replace("%vis", String.valueOf(light));
+		
 		for (Player p : plugin.getServer().getOnlinePlayers())
 		{
 			if (plugin.PermHandler.hasPermission(p, "foundboxx.notify", true, false))
 			{
-				String msg = plugin.OreMsg.replace("%ply", name + (name.equals("Jaryl") ? "*" : "")).replace("%amt", String.valueOf(total)).replace("%blk", item).replace("%vis", String.valueOf(light));
 				p.sendMessage(prefix + "[FB] " + msg);
 			}
 		}

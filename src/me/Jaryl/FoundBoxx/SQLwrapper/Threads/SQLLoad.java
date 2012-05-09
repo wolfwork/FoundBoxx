@@ -1,4 +1,4 @@
-package me.Jaryl.SQLwrapper.Threads;
+package me.Jaryl.FoundBoxx.SQLwrapper.Threads;
 
 import java.io.BufferedInputStream;
 import java.io.File;

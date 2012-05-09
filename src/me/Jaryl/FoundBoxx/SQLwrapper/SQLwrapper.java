@@ -1,4 +1,4 @@
-package me.Jaryl.SQLwrapper;
+package me.Jaryl.FoundBoxx.SQLwrapper;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;

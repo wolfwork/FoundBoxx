@@ -7,10 +7,10 @@ import java.util.List;
 
 import me.Jaryl.FoundBoxx.Listeners.fBlockListener;
 import me.Jaryl.FoundBoxx.Listeners.fBreakListener;
+import me.Jaryl.FoundBoxx.SQLwrapper.SQLwrapper;
+import me.Jaryl.FoundBoxx.SQLwrapper.Threads.SQLLoad;
 import me.Jaryl.FoundBoxx.Threads.Farmrate;
-import me.Jaryl.FoundBoxx.Update.Updater;
-import me.Jaryl.SQLwrapper.SQLwrapper;
-import me.Jaryl.SQLwrapper.Threads.SQLLoad;
+import me.Jaryl.PLUpdater.Updater;
 
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -31,6 +31,7 @@ public class FoundBoxx extends JavaPlugin {
 	
 	public boolean needRestart;
 	
+	public boolean Autoupdt;
 	public boolean Creative;
 	public boolean Nick;
 	public boolean Perms;
@@ -79,6 +80,7 @@ public class FoundBoxx extends JavaPlugin {
     		config.load();
     	}
     	
+    		Autoupdt = config.parse("Auto_Update_On_Plugin_Enable", true);
 	    	Creative = config.parse("Survival_Only", true);
 	    	Nick = config.parse("Use_Nickname", false);
 	    	//Delay = config.parse("Delay_In_Seconds", 10);
@@ -147,6 +149,7 @@ public class FoundBoxx extends JavaPlugin {
 	}
 	private void printConfig(CommandSender p)
 	{
+		p.sendMessage("    Auto-update on start: " + Autoupdt);
 		p.sendMessage("    Survival only: " + Creative);
 		p.sendMessage("    Permissions: " + Perms);
 		p.sendMessage("    Blocks:");
@@ -282,7 +285,10 @@ public class FoundBoxx extends JavaPlugin {
     	
     	System.out.println("[" + this.getDescription().getName() + " v" + this.getDescription().getVersion() + "] Enabled" + (needRestart ? " but will need a restart soon." : "."));
 	
-    	Thread updater = new Updater(this, null);
-		updater.start();
+    	if (Autoupdt)
+    	{
+	    	Thread updater = new Updater(this, null);
+			updater.start();
+    	}
 	}
 }
