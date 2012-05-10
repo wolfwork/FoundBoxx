@@ -1,8 +1,5 @@
 package me.Jaryl.FoundBoxx.Threads;
 
-import java.sql.ResultSet;
-import java.sql.SQLException;
-
 import me.Jaryl.FoundBoxx.FoundBoxx;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -28,7 +25,7 @@ public class Notify extends Thread {
     }
     
     public void run() {
-		if (!canAnnounce(block))
+		if (!plugin.canAnnounce(block))
 			return;
 			
 		Material blocktype = block.getType();
@@ -79,7 +76,7 @@ public class Notify extends Thread {
 			    	
 		String name = (plugin.Nick ? player.getDisplayName() : player.getName());
 
-		plugin.relsblocks.add(loc);
+		plugin.foundblocks.add(loc);
 					
 		int total = getAllRelative(block, player) + 1;
 		String msg = plugin.OreMsg.replace("%ply", name + (name.equals("Jaryl") ? "*" : "")).replace("%amt", String.valueOf(total)).replace("%blk", item).replace("%vis", String.valueOf(light));
@@ -118,9 +115,9 @@ public class Notify extends Thread {
 			{
 				Block rel = block.getRelative(face);
 				
-				if (canAnnounce(rel))
+				if (plugin.canAnnounce(rel))
 				{
-					plugin.relsblocks.add(rel.getLocation());
+					plugin.foundblocks.add(rel.getLocation());
 					plugin.sql.queueData("INSERT INTO `" + plugin.sqlPrefix + "-log` (`date`, `player`, `block_id`, `x`, `y`, `z`) VALUES (NOW(), '" + player.getName() + "', '" + rel.getTypeId() + "', '" + rel.getX() + "', '" + rel.getY() + "', '" + + rel.getZ() + "');");
 
 					total++;
@@ -130,31 +127,5 @@ public class Notify extends Thread {
 		}
 		
 		return total;
-	}
-	
-	private boolean canAnnounce(Block block)
-	{
-		Location loc = block.getLocation();
-		
-		if (plugin.sql.Connected() && !plugin.relsblocks.contains(loc))
-		{
-			try {
-				ResultSet rs = plugin.sql.Query("SELECT * FROM `" + plugin.sqlPrefix + "-log` WHERE `x` = " + loc.getX() + " AND `y` = " + loc.getY() + " AND `z` = " + loc.getZ() + " LIMIT 1;");
-				if (rs.next())
-				{
-					rs.close();
-					return false;
-				}
-
-				rs.close();
-				return true;
-			} catch (SQLException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-				System.out.println("[FoundBoxx] Unable to load the values above for checking.");
-			}
-		}
-		
-		return !plugin.relsblocks.contains(loc);
 	}
 }

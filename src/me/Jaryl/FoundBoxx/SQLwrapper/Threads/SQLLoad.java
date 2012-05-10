@@ -73,6 +73,7 @@ public class SQLLoad extends Thread {
 			if (plugin.sql.conn != null)
 			{
 				plugin.sql.dataQuery("CREATE TABLE IF NOT EXISTS `" + prefix + "-log` (`date` datetime NOT NULL, `player` longtext NOT NULL, `block_id` smallint NOT NULL, `x` int NOT NULL, `y` int NOT NULL, `z` int NOT NULL)");
+				plugin.sql.dataQuery("CREATE TABLE IF NOT EXISTS `" + prefix + "-placed` (`x` int NOT NULL, `y` int NOT NULL, `z` int NOT NULL)");
 			}
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block

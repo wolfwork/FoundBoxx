@@ -14,6 +14,7 @@ import me.Jaryl.PLUpdater.Updater;
 
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
+import org.bukkit.block.Block;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.plugin.PluginManager;
@@ -26,8 +27,7 @@ public class FoundBoxx extends JavaPlugin {
 	private fBreakListener breakListener = new fBreakListener(this);
 	public SQLwrapper sql = new SQLwrapper(this);
 
-	public List<Location> relsblocks = new ArrayList<Location>();
-	public List<Location> brokenblocks = new ArrayList<Location>();
+	public List<Location> foundblocks = new ArrayList<Location>();
 	
 	public boolean needRestart;
 	
@@ -70,6 +70,41 @@ public class FoundBoxx extends JavaPlugin {
 	public String sqlPass;
 	
 	public boolean Dark = false;
+	
+	public boolean canAnnounce(Block block)
+	{
+		Location loc = block.getLocation();
+		
+		if (sql.Connected() && !foundblocks.contains(loc))
+		{
+			try {
+				// Check if the block is placed by a player before
+				ResultSet rs = sql.Query("SELECT * FROM `" + sqlPrefix + "-placed` WHERE `x` = " + loc.getX() + " AND `y` = " + loc.getY() + " AND `z` = " + loc.getZ() + " LIMIT 1;");
+				if (rs.next())
+				{
+					rs.close();
+					return false;
+				}
+				
+				// Check if the block is found before
+				ResultSet rs2 = sql.Query("SELECT * FROM `" + sqlPrefix + "-log` WHERE `x` = " + loc.getX() + " AND `y` = " + loc.getY() + " AND `z` = " + loc.getZ() + " LIMIT 1;");
+				if (rs2.next())
+				{
+					rs2.close();
+					return false;
+				}
+
+				rs.close();
+				return true;
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+				System.out.println("[FoundBoxx] Unable to load the values above for checking.");
+			}
+		}
+		return !foundblocks.contains(loc);
+	}
+	
 	
 	private void loadConfigurations(CommandSender p)
 	{
@@ -178,7 +213,7 @@ public class FoundBoxx extends JavaPlugin {
 		
 		if(commandLabel.equalsIgnoreCase("foundboxx") || commandLabel.equalsIgnoreCase("fb")) {
 			if(args.length == 0) {
-				sender.sendMessage(ChatColor.AQUA + "[FoundBoxx v" + getDescription().getVersion() + " ] Commands:");
+				sender.sendMessage(ChatColor.AQUA + "[FoundBoxx v" + getDescription().getVersion() + "] Commands:");
 				sender.sendMessage("    /" + commandLabel);
 				sender.sendMessage("        reload - Reload configurations");
 				sender.sendMessage("        config - Print configurations");
