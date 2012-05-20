@@ -96,5 +96,7 @@ public class Farmrate extends Thread {
 				asker.sendMessage("    '" + Material.getMaterial(b).name() + "': " + extra.get(b));
 			}
 		}
+		
+		this.stop();
     }
 }

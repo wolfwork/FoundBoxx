@@ -48,9 +48,9 @@ public class SQLwrapper {
 				{
 					if (isQueuing == false || !dataQueries.isEmpty())
 					{
-						for (int i = 0; i < (dataQueries.size() > plugin.sqlData ? plugin.sqlData - 1 : (dataQueries.size() - 1)); i++)
+						for (int i = 0; i < (dataQueries.size() > plugin.sqlData ? plugin.sqlData : dataQueries.size()); i++)
 						{
-							String query = dataQueries.get(i);
+							String query = dataQueries.get(0);
 							if (!query.isEmpty())
 							{
 								try {
@@ -60,9 +60,9 @@ public class SQLwrapper {
 									e.printStackTrace();
 								}
 							}
-							dataQueries.remove(i);
+							dataQueries.remove(0);
 						}
-						
+
 						executeQueue();
 					}
 					else
@@ -70,7 +70,7 @@ public class SQLwrapper {
 						isQueuing = false;
 					}
 				}
-			}, 40);
+			}, 20);
 		}
 	}
 	public void queueData(String query) {

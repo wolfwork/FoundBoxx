@@ -104,6 +104,8 @@ public class Notify extends Thread {
 		}
 		
 		plugin.sql.queueData("INSERT INTO `" + plugin.sqlPrefix + "-log` (`date`, `player`, `block_id`, `x`, `y`, `z`) VALUES (NOW(), '" + player.getName() + "', " + block.getTypeId() + ", " + block.getX() + ", " + block.getY() + ", " + block.getZ() + ");");
+    
+		this.stop();
     }
     
 	private int getAllRelative(Block block, Player player)
