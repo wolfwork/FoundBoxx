@@ -1,8 +1,8 @@
 name: FoundBoxx
 main: me.Jaryl.FoundBoxx.FoundBoxx
-version: 1.7.8
+version: 1.8.4.2
 author: Jaryl
-website: http://e-clubmalaysia.com/, http://jaryl.euflux.com
+website: http://about.me/jarylc
 description: >
     Announce on certain block breaks
     by players and able to not show
@@ -43,6 +43,7 @@ permissions:
     foundboxx.ignore.*:
         description: Ignore the player for all ore finds
         children:
+            foundboxx.ignore.emerald: true
             foundboxx.ignore.diamond: true
             foundboxx.ignore.gold: true
             foundboxx.ignore.iron: true

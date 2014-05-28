@@ -7,24 +7,28 @@ import java.util.List;
 
 import me.Jaryl.FoundBoxx.Listeners.fBlockListener;
 import me.Jaryl.FoundBoxx.Listeners.fBreakListener;
+import me.Jaryl.FoundBoxx.Listeners.fPlayerListener;
 import me.Jaryl.FoundBoxx.SQLwrapper.SQLwrapper;
 import me.Jaryl.FoundBoxx.SQLwrapper.Threads.SQLLoad;
 import me.Jaryl.FoundBoxx.Threads.Farmrate;
-import me.Jaryl.PLUpdater.Updater;
+import net.gravitydevelopment.updater.Updater;
 
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.block.Block;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
+import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.mcstats.MetricsLite;
 
 
 public class FoundBoxx extends JavaPlugin {
 	public PermissionsHandler PermHandler = new PermissionsHandler(this);
 	private fBlockListener blockListener = new fBlockListener(this);
 	private fBreakListener breakListener = new fBreakListener(this);
+	private fPlayerListener playerListener = new fPlayerListener(this, this.getFile());
 	public SQLwrapper sql = new SQLwrapper(this);
 
 	public List<Location> foundblocks = new ArrayList<Location>();
@@ -40,6 +44,9 @@ public class FoundBoxx extends JavaPlugin {
 	public String OreMsg;
 	//public int Delay;
 	
+	public boolean diagonal;
+	
+	public boolean Emeralds;
 	public boolean Diamonds;
 	public boolean Gold;
 	public boolean Iron;
@@ -52,11 +59,13 @@ public class FoundBoxx extends JavaPlugin {
 	public int maxGive;
 	public int Item;
 	
-	public boolean SpecReward;
+	/*public boolean SpecReward;
 	public int SpecOre;
 	public int SpecVein;
 	public int SpecItem;
-	public boolean SpecFinder;
+	public boolean SpecFinder;*/
+	
+	public boolean Dark = false;
 	
 	public String useSQL;
 	public String sqlURL;
@@ -68,8 +77,6 @@ public class FoundBoxx extends JavaPlugin {
 	public String sqlPrefix;
 	public String sqlUser;
 	public String sqlPass;
-	
-	public boolean Dark = false;
 	
 	public boolean canAnnounce(Block block)
 	{
@@ -97,7 +104,6 @@ public class FoundBoxx extends JavaPlugin {
 				rs.close();
 				return true;
 			} catch (SQLException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 				System.out.println("[FoundBoxx] Unable to load the values above for checking.");
 			}
@@ -105,58 +111,60 @@ public class FoundBoxx extends JavaPlugin {
 		return !foundblocks.contains(loc);
 	}
 	
-	
+	@SuppressWarnings("unchecked")
+	public <T> T parseConfig(String path, T def) {
+		FileConfiguration config = getConfig();
+		T rval = (T) config.get(path, def);
+		config.set(path, rval);
+		return rval;
+	}
 	private void loadConfigurations(CommandSender p)
 	{
-    	Configuration config = new Configuration(this);
-    	
-    	if (config.exists())
-    	{
-    		config.load();
-    	}
-    	
-    		Autoupdt = config.parse("Auto_Update_On_Plugin_Enable", true);
-	    	Creative = config.parse("Survival_Only", true);
-	    	Nick = config.parse("Use_Nickname", false);
-	    	//Delay = config.parse("Delay_In_Seconds", 10);
-	    	Perms = config.parse("Use_Permissions", false);
+		reloadConfig();
+    		Autoupdt = parseConfig("Auto_Update_On_Plugin_Enable", true);
+	    	Creative = parseConfig("Survival_Only", true);
+	    	Nick = parseConfig("Use_Nickname", false);
+	    	//Delay = parseConfig("Delay_In_Seconds", 10);
+	    	Perms = parseConfig("Use_Permissions", false);
 	    	
-	    	OreMsg = config.parse("Messages.Found_Notification", "%ply found %amt %blk(s) (Visibility: %vis%)");
-	    	DarkMsg = config.parse("Messages.Must_Have_Light_To_Mine", "Interacting in the dark is dangerous! Put some torches!");
+	    	OreMsg = parseConfig("Messages.Found_Notification", "%ply found %amt %blk(s) (Visibility: %vis%)");
+	    	DarkMsg = parseConfig("Messages.Must_Have_Light_To_Mine", "Interacting in the dark is dangerous! Put some torches!");
 	    	
-	    	Diamonds = config.parse("DIAMONDS", true);
-	    	Gold = config.parse("GOLD", true);
-	    	Iron = config.parse("IRON", true);
-	    	Coal = config.parse("COAL", false);
-	    	Lapis = config.parse("LAPIS", true);
-	    	Red = config.parse("REDSTONE", false);
-	    	ExtraBlks = config.parse("Extra_Blocks_IDs", new ArrayList<Integer>());
+	    	diagonal = parseConfig("Count_Diagonal_Ores", false);
 	    	
-	    	Chance = config.parse("Percentage_Chance_To_Give_Randoms_Item", 0);
-	    	maxGive = config.parse("Max_Random_Items_To_Give", 3);
-	    	Item = config.parse("Random_Item_To_Give", 365);
+	    	Emeralds = parseConfig("EMERALDS", true);
+	    	Diamonds = parseConfig("DIAMONDS", true);
+	    	Gold = parseConfig("GOLD", true);
+	    	Iron = parseConfig("IRON", true);
+	    	Coal = parseConfig("COAL", false);
+	    	Lapis = parseConfig("LAPIS", true);
+	    	Red = parseConfig("REDSTONE", false);
+	    	ExtraBlks = parseConfig("Extra_Blocks_IDs", new ArrayList<Integer>());
 	    	
-	    	/*SpecReward = config.parse("Use_Special_Reward", false);
-	    	SpecOre = config.parse("Special_Reward.Required_Block_Mined", 56);
-	    	SpecVein = config.parse("Special_Reward.Required_Vein_Size", 3);
-	    	SpecItem = config.parse("Special_Reward.Random_Item_To_Give", 92);
-	    	SpecFinder = config.parse("Special_Reward.Only_Finder_Gets_Item", false);*/
+	    	Chance = parseConfig("Percentage_Chance_To_Give_Randoms_Item", 0);
+	    	maxGive = parseConfig("Max_Random_Items_To_Give", 3);
+	    	Item = parseConfig("Random_Item_To_Give", 365);
 	    	
-	    	Dark = config.parse("Must_Have_Light_To_Mine", false);
+	    	/*SpecReward = parseConfig("Use_Special_Reward", false);
+	    	SpecOre = parseConfig("Special_Reward.Required_Block_Mined", 56);
+	    	SpecVein = parseConfig("Special_Reward.Required_Vein_Size", 3);
+	    	SpecItem = parseConfig("Special_Reward.Random_Item_To_Give", 92);
+	    	SpecFinder = parseConfig("Special_Reward.Only_Finder_Gets_Item", false);*/
 	    	
-	    	useSQL = String.valueOf(config.parse("SQL_Enabled", false));
-	    	sqlURL = config.parse("SQL.URL", "localhost");
-	    	sqlPort = config.parse("SQL.Port", 3306);
-	    	sqlDatabase = config.parse("SQL.Database", "minecraft");
-	    	sqlDays = config.parse("SQL.Days_To_Remove", 1);
-	    	sqlLimit = config.parse("SQL.Maximum_Queries", 5000);
-	    	sqlData = config.parse("SQL.Maximum_Data_Queries_Per_Second", 10);
-	    	sqlPrefix = config.parse("SQL.Prefix", "fb");
-	    	sqlUser = config.parse("SQL.User", "root@localhost");
-	    	sqlPass = config.parse("SQL.Pass", "");
+	    	Dark = parseConfig("Must_Have_Light_To_Mine", false);
 	    	
-    	config.save();
-    	
+	    	useSQL = String.valueOf(parseConfig("SQL_Enabled", false));
+	    	sqlURL = parseConfig("SQL.URL", "localhost");
+	    	sqlPort = parseConfig("SQL.Port", 3306);
+	    	sqlDatabase = parseConfig("SQL.Database", "minecraft");
+	    	sqlDays = parseConfig("SQL.Days_To_Remove", 1);
+	    	sqlLimit = parseConfig("SQL.Maximum_Queries", 5000);
+	    	sqlData = parseConfig("SQL.Maximum_Data_Queries_Per_Second", 10);
+	    	sqlPrefix = parseConfig("SQL.Prefix", "fb");
+	    	sqlUser = parseConfig("SQL.User", "root@localhost");
+	    	sqlPass = parseConfig("SQL.Pass", "");
+	    	
+	    	saveConfig();
     	if (p != null)
     	{
     		p.sendMessage(ChatColor.AQUA + "[FoundBoxx] New configurations:");
@@ -177,7 +185,6 @@ public class FoundBoxx extends JavaPlugin {
     		try {
 				sql.Stop();
 			} catch (SQLException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
     	}
@@ -187,7 +194,9 @@ public class FoundBoxx extends JavaPlugin {
 		p.sendMessage("    Auto-update on start: " + Autoupdt);
 		p.sendMessage("    Survival only: " + Creative);
 		p.sendMessage("    Permissions: " + Perms);
+		p.sendMessage("    Count diagonal ores: " + diagonal);
 		p.sendMessage("    Blocks:");
+		p.sendMessage("        EMERALDS: " + Emeralds);
 		p.sendMessage("        DIAMONDS: " + Diamonds);
 		p.sendMessage("        GOLD: " + Gold);
 		p.sendMessage("        IRON: " + Iron);
@@ -263,8 +272,10 @@ public class FoundBoxx extends JavaPlugin {
 				}
 				if (args[0].equalsIgnoreCase("update") && PermHandler.hasPermission(sender, "foundboxx.cmd.update", false, false))
 				{
-					Thread updater = new Updater(this, sender);
-					updater.start();
+					if (Autoupdt)
+			    	{
+			    		new Updater(this, 33366, this.getFile(), Updater.UpdateType.DEFAULT, true);
+			    	}
 					
 					return true;
 				}
@@ -285,7 +296,6 @@ public class FoundBoxx extends JavaPlugin {
 				Thread farmrate = new Farmrate(this, rs, name, days, asker);
 				farmrate.start();
 			} catch (SQLException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 				asker.sendMessage("[FoundBoxx] Unable to load values above for checking.");
 			}
@@ -299,7 +309,6 @@ public class FoundBoxx extends JavaPlugin {
     
 	@Override
 	public void onDisable() {
-
 		try {
 			sql.Stop();
 		} catch (SQLException e) {
@@ -317,13 +326,20 @@ public class FoundBoxx extends JavaPlugin {
     	PluginManager pm = getServer().getPluginManager();
     	pm.registerEvents(blockListener, this);
     	pm.registerEvents(breakListener, this);
+    	pm.registerEvents(playerListener, this);
     	
     	System.out.println("[" + this.getDescription().getName() + " v" + this.getDescription().getVersion() + "] Enabled" + (needRestart ? " but will need a restart soon." : "."));
 	
     	if (Autoupdt)
     	{
-	    	Thread updater = new Updater(this, null);
-			updater.start();
+    		new Updater(this, 33366, this.getFile(), Updater.UpdateType.DEFAULT, true);
+    	}
+    	
+    	try {
+    	    MetricsLite metrics = new MetricsLite(this);
+    	    metrics.start();
+    	} catch (Exception e) {
+    	    e.printStackTrace();
     	}
 	}
 }

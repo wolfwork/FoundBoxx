@@ -42,7 +42,7 @@ public class fBlockListener implements Listener {
 				player.sendMessage(ChatColor.RED + "[FB] " + plugin.DarkMsg);
 			}
 			
-			if (plugin.Creative && player.getGameMode() != GameMode.CREATIVE)
+			if (plugin.canAnnounce(block) && (plugin.Creative && player.getGameMode() != GameMode.CREATIVE))
 			{
 		    	Thread notify = new Notify(plugin, player, block, loc, light);
 				notify.start();

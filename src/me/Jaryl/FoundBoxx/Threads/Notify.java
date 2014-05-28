@@ -25,15 +25,18 @@ public class Notify extends Thread {
     }
     
     public void run() {
-		if (!plugin.canAnnounce(block))
-			return;
-			
 		Material blocktype = block.getType();
 		
 		ChatColor prefix = ChatColor.WHITE;
 		String item = null;
 		Boolean toGive = false;
-					
+
+		if (plugin.Emeralds && blocktype == Material.EMERALD_ORE && !plugin.PermHandler.hasPermission(player, "foundboxx.ignore.emerald", false, true))
+		{
+			prefix = ChatColor.GREEN;
+			item = "emerald";
+			toGive = (plugin.Chance > 0);
+		}			
 		if (plugin.Diamonds && blocktype == Material.DIAMOND_ORE && !plugin.PermHandler.hasPermission(player, "foundboxx.ignore.diamond", false, true))
 		{
 			prefix = ChatColor.AQUA;
@@ -97,31 +100,33 @@ public class Notify extends Thread {
 				{
 					ItemStack rand = new ItemStack(plugin.Item, maxGive);
 					p.getInventory().addItem(rand);
-								
-								p.sendMessage(ChatColor.GREEN + "[FB] Everyone got free " + maxGive + " " + Material.getMaterial(plugin.Item).name() + "(s)" + (plugin.Perms ? " thanks to " + name : ""));
+					p.sendMessage(ChatColor.GREEN + "[FB] Everyone got free " + maxGive + " " + Material.getMaterial(plugin.Item).name() + "(s)" + (plugin.Perms ? " thanks to " + name : ""));
 				}
 			}
 		}
 		
 		plugin.sql.queueData("INSERT INTO `" + plugin.sqlPrefix + "-log` (`date`, `player`, `block_id`, `x`, `y`, `z`) VALUES (NOW(), '" + player.getName() + "', " + block.getTypeId() + ", " + block.getX() + ", " + block.getY() + ", " + block.getZ() + ");");
-    
-		this.stop();
     }
     
 	private int getAllRelative(Block block, Player player)
 	{
 		Integer total = 0;
 		
-		for (BlockFace face : BlockFace.values()) {
+		BlockFace[] faces = {BlockFace.UP, BlockFace.DOWN, BlockFace.NORTH, BlockFace.SOUTH, BlockFace.EAST, BlockFace.WEST};
+		if (plugin.diagonal)
+			faces = BlockFace.values();
+		
+		for (BlockFace face : faces) {
 			if (block.getRelative(face).getType() == block.getType())
 			{
 				Block rel = block.getRelative(face);
 				
 				if (plugin.canAnnounce(rel))
 				{
-					plugin.foundblocks.add(rel.getLocation());
 					plugin.sql.queueData("INSERT INTO `" + plugin.sqlPrefix + "-log` (`date`, `player`, `block_id`, `x`, `y`, `z`) VALUES (NOW(), '" + player.getName() + "', '" + rel.getTypeId() + "', '" + rel.getX() + "', '" + rel.getY() + "', '" + + rel.getZ() + "');");
-
+					
+					plugin.foundblocks.add(rel.getLocation());
+					
 					total++;
 					total = total + getAllRelative(rel, player);
 				}

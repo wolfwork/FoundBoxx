@@ -31,12 +31,17 @@ public class Farmrate extends Thread {
 		int lapis = 0;
 		int gold = 0;
 		int dias = 0;
+		int emer = 0;
 		HashMap<Integer, Integer> extra = new HashMap<Integer, Integer>();
 		
 		try {
 			while (rs.next())
 			{
 				int id = rs.getInt("block_id");
+				if (plugin.Emeralds && id == 129)
+				{
+					emer++;
+				}
 				if (plugin.Diamonds && id == 56)
 				{
 					dias++;
@@ -71,11 +76,12 @@ public class Farmrate extends Thread {
 				}
 			}
 		} catch (SQLException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		
 		asker.sendMessage(ChatColor.AQUA + "[FoundBoxx] Farming rates for " + name + " for the past " + days + " day(s):");
+		if (emer > 0)
+			asker.sendMessage("    Emeralds: " + (dias > (50 * Integer.parseInt(days)) ? ChatColor.RED : (dias > (30 * Integer.parseInt(days)) ? ChatColor.YELLOW : "")) + emer);
 		if (dias > 0)
 			asker.sendMessage("    Diamonds: " + (dias > (70 * Integer.parseInt(days)) ? ChatColor.RED : (dias > (50 * Integer.parseInt(days)) ? ChatColor.YELLOW : "")) + dias);
 		if (gold > 0)
@@ -96,7 +102,5 @@ public class Farmrate extends Thread {
 				asker.sendMessage("    '" + Material.getMaterial(b).name() + "': " + extra.get(b));
 			}
 		}
-		
-		this.stop();
     }
 }

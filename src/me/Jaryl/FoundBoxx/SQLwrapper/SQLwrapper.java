@@ -42,7 +42,7 @@ public class SQLwrapper {
 		{
 			isQueuing = true;
 			
-			plugin.getServer().getScheduler().scheduleAsyncDelayedTask(plugin, new Runnable()
+			plugin.getServer().getScheduler().scheduleSyncDelayedTask(plugin, new Runnable()
 			{
 				public void run()
 				{
@@ -56,7 +56,6 @@ public class SQLwrapper {
 								try {
 									dataQuery(query);
 								} catch (SQLException e) {
-									// TODO Auto-generated catch block
 									e.printStackTrace();
 								}
 							}
@@ -122,9 +121,8 @@ public class SQLwrapper {
 						try {
 							dataQuery(query);
 						} catch (SQLException e) {
-							// TODO Auto-generated catch block
 							e.printStackTrace();
-							}
+						}
 					}
 					dataQueries.remove(i);
 				}

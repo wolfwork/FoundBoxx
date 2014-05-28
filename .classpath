@@ -2,9 +2,8 @@
 <classpath>
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.6"/>
-	<classpathentry kind="lib" path="C:/Dropbox/Java Projects/,LIBRARY/PermissionsEx.jar"/>
 	<classpathentry kind="con" path="org.eclipse.jst.j2ee.internal.module.container"/>
-	<classpathentry kind="lib" path="C:/Dropbox/Java Projects/,LIBRARY/craftbukkit.jar"/>
-	<classpathentry kind="lib" path="C:/Users/Jaryl/Jaryl/Java/WorldGuard.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Jaryl/Desktop/bukkit/craftbukkit.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Jaryl/Desktop/bukkit/plugins/PermissionsEx/PermissionsEx.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

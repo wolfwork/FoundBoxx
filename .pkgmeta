@@ -1,0 +1,5 @@
+package-as: foundboxx
+
+ignore:
+    - Scripts # ignore the scripts folder
+    - Some/File.txt # ignore a specific file

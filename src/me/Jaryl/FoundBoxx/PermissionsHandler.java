@@ -2,8 +2,6 @@ package me.Jaryl.FoundBoxx;
 
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import ru.tehkode.permissions.PermissionManager;
-import ru.tehkode.permissions.bukkit.PermissionsEx;
 
 public class PermissionsHandler {
 	private FoundBoxx plugin; //NOTE TO SELF: RMB TO CHANGE THIS ON NEW PROJECTS
@@ -12,7 +10,7 @@ public class PermissionsHandler {
 	}
 
     // PermissionsEX
-    public PermissionManager pexPermissions;
+    public ru.tehkode.permissions.PermissionManager pexPermissions;
     Boolean PEXB = false;
 	
 	public boolean hasPermission(Player p, String perm, boolean def, boolean ignoreop)
@@ -39,12 +37,12 @@ public class PermissionsHandler {
 	
 	public void setupPermissions() {
         if (plugin.getServer().getPluginManager().getPlugin("PermissionsEx") != null) {
-            pexPermissions = PermissionsEx.getPermissionManager();
+            pexPermissions = ru.tehkode.permissions.bukkit.PermissionsEx.getPermissionManager();
             PEXB = true;
             System.out.println("[" + plugin.getDescription().getName() + "] Listening to PermissionsEX.");
             return;
         }
         
         System.out.println("[" + plugin.getDescription().getName() + "] No custom permission plugins found, using original permissions.");
-    }
+	}
 }

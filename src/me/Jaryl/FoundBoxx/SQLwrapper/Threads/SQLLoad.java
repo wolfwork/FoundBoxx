@@ -61,7 +61,7 @@ public class SQLLoad extends Thread {
 					}
 				}
 				
-				plugin.sql.conn = DriverManager.getConnection("jdbc:h2:" + plugin.getDataFolder() + File.separator + prefix + "-log;IGNORECASE=TRUE");
+				plugin.sql.conn = DriverManager.getConnection("jdbc:h2:." + File.separator + plugin.getDataFolder() + File.separator + prefix + "-log;IGNORECASE=TRUE");
 			}
 			else
 			{
@@ -76,11 +76,10 @@ public class SQLLoad extends Thread {
 				plugin.sql.dataQuery("CREATE TABLE IF NOT EXISTS `" + prefix + "-placed` (`x` int NOT NULL, `y` int NOT NULL, `z` int NOT NULL)");
 			}
 		} catch (SQLException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		
-		this.stop();
+		this.interrupt();
 	}
 	
 	private boolean checkLibrary() {
