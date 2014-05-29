@@ -17,7 +17,7 @@ public class fPlayerListener implements Listener{
 	
 	@EventHandler(priority = EventPriority.MONITOR)
 	public void onPlayerJoin(PlayerJoinEvent event) {
-		if (plugin.Autoupdt && plugin.PermHandler.hasPermission(event.getPlayer(), "foundboxx.cmd.update", false, false))
+		if (plugin.UpdtNotify && plugin.PermHandler.hasPermission(event.getPlayer(), "foundboxx.cmd.update", false, false))
 		{
     		Updater update = new Updater(plugin, 33366, file, Updater.UpdateType.NO_DOWNLOAD, true);
     		if (update.getResult() == Updater.UpdateResult.UPDATE_AVAILABLE) {

@@ -36,6 +36,8 @@ public class FoundBoxx extends JavaPlugin {
 	public boolean needRestart;
 	
 	public boolean Autoupdt;
+	public boolean UpdtNotify;
+	public boolean Stats;
 	public boolean Creative;
 	public boolean Nick;
 	public boolean Perms;
@@ -122,6 +124,8 @@ public class FoundBoxx extends JavaPlugin {
 	{
 		reloadConfig();
     		Autoupdt = parseConfig("Auto_Update_On_Plugin_Enable", true);
+    		UpdtNotify = parseConfig("Notify_On_Updates", true);
+    		Stats = parseConfig("Allow_Usage_Stats_Collection", true);
 	    	Creative = parseConfig("Survival_Only", true);
 	    	Nick = parseConfig("Use_Nickname", false);
 	    	//Delay = parseConfig("Delay_In_Seconds", 10);
@@ -192,6 +196,8 @@ public class FoundBoxx extends JavaPlugin {
 	private void printConfig(CommandSender p)
 	{
 		p.sendMessage("    Auto-update on start: " + Autoupdt);
+		p.sendMessage("    Updates available notification: " + UpdtNotify);
+		p.sendMessage("    Allow usage stats collection: " + Stats);
 		p.sendMessage("    Survival only: " + Creative);
 		p.sendMessage("    Permissions: " + Perms);
 		p.sendMessage("    Count diagonal ores: " + diagonal);
@@ -336,10 +342,15 @@ public class FoundBoxx extends JavaPlugin {
     	}
     	
     	try {
-    	    MetricsLite metrics = new MetricsLite(this);
-    	    metrics.start();
-    	} catch (Exception e) {
-    	    e.printStackTrace();
+	    	MetricsLite metrics = new MetricsLite(this);
+	    	if (Stats) {
+		    	metrics.enable();
+	    	} else {
+		    	metrics.disable();
+	    	}
+    	} catch(Exception ex) {
+    		ex.printStackTrace();
     	}
+    	System.out.println("[" + this.getDescription().getName() + " v" + this.getDescription().getVersion() + "] Stats collection is " + (Stats ? "is enabled." : "is disabled."));
 	}
 }
